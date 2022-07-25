@@ -1,40 +1,37 @@
 package com.bob.projects.mongo.model;
+
 import com.querydsl.core.annotations.QueryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
 @QueryEntity
 @Document
-@CompoundIndexes({ @CompoundIndex(name = "email_age", def = "{'email.id' : 1, 'age': 1}") })
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class User {
+public class Movie {
     @Id
     private String id;
-    @Indexed(direction = IndexDirection.ASCENDING)
+    @Indexed(unique = true)
     private String name;
-    @Indexed(direction = IndexDirection.ASCENDING)
-    private Integer age;
-    private String emailAddress;
-    @Transient
-    private Integer yearOfBirth;
-@Builder
-    public User(String name, Integer age, String emailAddress) {
+    private String subject;
+    private LocalDateTime releasedDate;
+    @Field("actor")
+    private List<Actor> actorList;
+
+    @Builder
+    public Movie(String name, String subject, LocalDateTime releasedDate, List<Actor> actorList) {
         this.name = name;
-        this.age = age;
-        this.emailAddress = emailAddress;
+        this.subject = subject;
+        this.releasedDate = releasedDate;
+        this.actorList = actorList;
     }
 }

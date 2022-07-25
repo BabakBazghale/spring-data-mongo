@@ -6,11 +6,13 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
-public interface UserRepository extends MongoRepository<Movie, String>{
+public interface MovieRepository extends MongoRepository<Movie, String>{
     @Query("{ 'name' : ?0 }")
     List<Movie> findByName(String name);
     @Query("{ 'name' : { $regex: ?0 } }")
     List<Movie> findByNameRegex(String regexp);
+
+    boolean existsByName(String name);
 
     List<Movie> findByNameLikeOrderByReleasedDate(String name);
 
