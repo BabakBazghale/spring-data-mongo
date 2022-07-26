@@ -8,6 +8,7 @@ import com.bob.projects.mongo.model.Movie;
 import com.bob.projects.mongo.repository.ActorRepository;
 import com.bob.projects.mongo.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class MovieService {
     private MovieRepository movieRepository;
     @Autowired
     private ActorRepository actorRepository;
+
 
     public ResponseEntity<MovieResponseDTO> movieCreation() {
         Movie movie = Movie.builder()
@@ -38,12 +40,12 @@ public class MovieService {
 
     public ResponseEntity<List<ActorResponseDTO>> actorsCreation() {
         List<Actor> actorList = actorsGeneration();
-        if (fetchActorByFamily(
-                actorList.stream().map(x -> x.getFamily()).collect(Collectors.toList()))) {
+        if (fetchActorByFamily(actorList.stream().map(x -> x.getFamily()).collect(Collectors.toList()))) {
             throw new DuplicateDataException("duplicate data exception raised.");
         }
         actorRepository.insert(actorList);
-        return ResponseEntity.ok(actorList.stream().map(ActorResponseDTO::new).collect(Collectors.toList()));
+        return ResponseEntity.ok(!actorList.isEmpty() ? actorList.stream().map(ActorResponseDTO::new).collect(Collectors.toList())
+                : null);
     }
 
     private List<Actor> actorsGeneration() {
@@ -63,9 +65,11 @@ public class MovieService {
     public List<Actor> fetchActors() {
         return actorRepository.findByAgeBetween(20, 40);
     }
-    public  ResponseEntity<List<ActorResponseDTO>>fetchActorsByAge(Integer minAge,Integer maxAge) {
-        return ResponseEntity.ok(actorRepository.findByAgeBetween(minAge, maxAge)
-                .stream().map(ActorResponseDTO::new).collect(Collectors.toList()));
+
+    public ResponseEntity<List<ActorResponseDTO>> fetchActorsByAge(Integer minAge, Integer maxAge) {
+        List<Actor> actorList = actorRepository.findByAgeBetween(minAge, maxAge);
+        return ResponseEntity.ok(!actorList.isEmpty() ? actorList
+                .stream().map(ActorResponseDTO::new).collect(Collectors.toList()) : null);
     }
 
     public boolean fetchMovieByName(String name) {
@@ -74,5 +78,11 @@ public class MovieService {
 
     public boolean fetchActorByFamily(List<String> familyList) {
         return actorRepository.existsByFamilyIn(familyList);
+    }
+
+    public ResponseEntity<List<MovieResponseDTO>> findMovieByData(String name, String subject, LocalDateTime releasedDate, Pageable page) {
+        List<Movie> movieList = movieRepository.findMovieByData(name, subject, releasedDate, page);
+        return ResponseEntity.ok(!movieList.isEmpty() ?
+                movieList.stream().map(MovieResponseDTO::new).collect(Collectors.toList()) : null);
     }
 }

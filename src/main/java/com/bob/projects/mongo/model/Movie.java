@@ -1,7 +1,6 @@
 package com.bob.projects.mongo.model;
 
 import com.querydsl.core.annotations.QueryEntity;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;

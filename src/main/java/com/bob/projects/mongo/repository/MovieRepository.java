@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
-public interface MovieRepository extends MongoRepository<Movie, String>{
+public interface MovieRepository extends MongoRepository<Movie, String>,MovieCustomRepository{
     @Query("{ 'name' : ?0 }")
     List<Movie> findByName(String name);
     @Query("{ 'name' : { $regex: ?0 } }")
